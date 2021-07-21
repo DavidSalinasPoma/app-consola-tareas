@@ -25,6 +25,7 @@ class Main {
 
     if (this.tareasDB) {
       // Establecer las tareas
+      tareas.cargarTareasFromArray(this.tareasDB);
     }
     await inquirer.pausaMenu();
     do {
@@ -38,7 +39,31 @@ class Main {
           tareas.crearTarea(desc);
           break;
         case '2':
-          console.log(tareas.listadoArray);
+          tareas.listadoCompleto();
+          // console.log(tareas.listadoArray);
+          break;
+        case '3':
+          tareas.listarTareasCompletadas(true);
+          break;
+        case '4':
+          tareas.listarTareasCompletadas(false);
+          break;
+        case '5':
+          const ids = await inquirer.mostrarListadoCheckList(
+            tareas.listadoArray,
+          );
+          console.log(ids);
+          break;
+        case '6':
+          const id = await inquirer.listadoTareasBorrar(tareas.listadoArray);
+          if (id !== '0') {
+            const ok = await inquirer.confirmarEliminacion('¿Esta seguro?');
+            // Preguntar si esta seguro de borrar
+            if (ok) {
+              tareas.borrarTarea(id);
+              console.log('Tarea borrada correctamente');
+            }
+          }
           break;
         default:
           break;
@@ -46,10 +71,8 @@ class Main {
 
       // Grabar la info en la bd
       guardarDB(tareas.listadoArray);
-
-      if (opt !== '0') {
-        await inquirer.pausaMenu();
-      }
+      // Pausar el menu
+      await inquirer.pausaMenu();
     } while (opt !== '0');
   }
 }
